@@ -38,4 +38,9 @@ jobs:
           # tags: |          
           #   ${{ secrets.DOCKERHUB_USERNAME }}/postgres-container:latest
           #   ${{ secrets.DOCKERHUB_USERNAME }}/postgres-container:v1.0.0-rc.1
+
+      - name: Push image to GHCR
+        run: |
+          docker buildx imagetools create \
+            --tag ghcr.io/${{ secrets.DOCKERHUB_USERNAME }}/postgres-container:v1.0.0-rc.1 \            
           
