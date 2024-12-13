@@ -39,8 +39,8 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/postgres-container:v1.0.0-rc.1
           build-args: |
-            PG_MAJOR=17
-            ORACLE_VERSION=19.25.0.0.0
+            PG_MAJOR="17"
+            ORACLE_VERSION="19.25.0.0.0"
           # tags: |          
           #   ${{ secrets.DOCKERHUB_USERNAME }}/postgres-container:latest
           #   ${{ secrets.DOCKERHUB_USERNAME }}/postgres-container:v1.0.0-rc.1
@@ -49,5 +49,5 @@ jobs:
         run: |
           docker buildx imagetools create \
             --tag ghcr.io/${{ secrets.DOCKERHUB_USERNAME }}/postgres-container:v1.0.0-rc.1 \
-            --build-arg PG_MAJOR=17 \
-            --build-arg ORACLE_VERSION=19.25.0.0.0
+            --build-arg PG_MAJOR="17" \
+            --build-arg ORACLE_VERSION="19.25.0.0.0"
