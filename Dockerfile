@@ -1,7 +1,8 @@
 # Reference: https://cloudnative-pg.io/blog/creating-container-images/
+ARG PG_MAJOR=17
 FROM ghcr.io/cloudnative-pg/postgresql:$PG_MAJOR-bullseye
 
-ARG PG_MAJOR=17
+
 ARG ORACLE_VERSION=19.25.0.0.0
 
 USER root
