@@ -51,16 +51,12 @@ jobs:
             --tag ghcr.io/${{ github.repository_owner }}/postgres-container:v1.0.0-rc.1 \
             ${{ secrets.DOCKERHUB_USERNAME }}/postgres-container:v1.0.0-rc.1
 
-      - name: downcase repo owner
-        run: |
-          echo "repository_owner_lower=${github.repository_owner,,}" >>${GITHUB_ENV}
-
       - name: Build and push to GHCR
         uses: docker/build-push-action@v6
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ repository_owner_lower }}/postgres-container:v1.0.0-rc.1
+          tags: ${{ github.repository_owner,, }}/postgres-container:v1.0.0-rc.1
           build-args: |
             PG_MAJOR=17
             ORACLE_VERSION=19.25.0.0.0
