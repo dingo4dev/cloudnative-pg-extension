@@ -45,10 +45,16 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Repository to lowercase
+        id: lower-repo
+        run: |
+          GITHUB_REPOSITORY=${{github.repository_owner}} && 
+          echo "repository=${GITHUB_REPOSITORY@L}/postgres-container" >> $GITHUB_OUTPUT
+
       - name: Push image to GHCR
         run: |
           docker buildx imagetools create \
-            --tag ghcr.io/${${{ github.repository_owner }},,}/postgres-container:v1.0.0-rc.1 \
+            --tag ghcr.io/${{ steps.lower-repo.outputs.repository }}:v1.0.0-rc.1 \
             ${{ secrets.DOCKERHUB_USERNAME }}/postgres-container:v1.0.0-rc.1
 
       # - name: Build and push to GHCR
