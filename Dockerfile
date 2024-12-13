@@ -47,7 +47,7 @@ RUN git clone https://github.com/laurenz/oracle_fdw.git \
 #     && make install
 
 # Add extension to postgresql.conf
-# RUN echo "shared_preload_libraries = 'oracle_fdw'" >> /usr/share/postgresql/postgresql.conf.sample
+RUN echo "shared_preload_libraries = 'oracle_fdw'" >> /usr/share/postgresql/postgresql.conf
 
 # Cleanup
 RUN apt-get remove -y build-essential git postgresql-server-dev-$PG_MAJOR \

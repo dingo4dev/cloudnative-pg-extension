@@ -30,7 +30,7 @@ jobs:
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/postgres-container:v1.0.0-rc.1
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/postgres-container:v0.0.1
           build-args: |
             PG_MAJOR=17
             ORACLE_VERSION=19.25.0.0.0
@@ -51,18 +51,18 @@ jobs:
           GITHUB_REPOSITORY=${{github.repository_owner}} && 
           echo "repository=${GITHUB_REPOSITORY@L}/postgres-container" >> $GITHUB_OUTPUT
 
-      - name: Push image to GHCR
-        run: |
-          docker buildx imagetools create \
-            --tag ghcr.io/${{ steps.lower-repo.outputs.repository }}:v1.0.0-rc.1 \
-            ${{ secrets.DOCKERHUB_USERNAME }}/postgres-container:v1.0.0-rc.1
+      # - name: Push image to GHCR
+      #   run: |
+      #     docker buildx imagetools create \
+      #       --tag ghcr.io/${{ steps.lower-repo.outputs.repository }}:v0.0.1 \
+      #       ${{ secrets.DOCKERHUB_USERNAME }}/postgres-container:v0.0.1
 
-      # - name: Build and push to GHCR
-      #   uses: docker/build-push-action@v6
-      #   with:
-      #     context: .
-      #     push: ${{ github.event_name != 'pull_request' }}
-      #     tags: ${{ github.repository_owner,, }}/postgres-container:v1.0.0-rc.1
-      #     build-args: |
-      #       PG_MAJOR=17
-      #       ORACLE_VERSION=19.25.0.0.0
+      - name: Build and push to GHCR
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ghcr.io/${{ steps.lower-repo.outputs.repository }}:v0.0.1
+          build-args: |
+            PG_MAJOR=17
+            ORACLE_VERSION=19.25.0.0.0
