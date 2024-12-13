@@ -5,6 +5,9 @@ FROM ghcr.io/cloudnative-pg/postgresql:$PG_MAJOR-bullseye
 
 USER root
 
+RUN  echo Postgresql Major Version: $PG_MAJOR && echo Oracle instant client version: $ORACLE_VERSION
+
+
 # Install build dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
