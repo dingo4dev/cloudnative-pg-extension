@@ -21,28 +21,30 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Oracle Instant Client for support oracle 11g
-RUN mkdir -p /opt/oracle && \
-    cd /opt/oracle && \
+RUN mkdir -p /opt/oracle && cd /opt/oracle &&\
     wget https://download.oracle.com/otn_software/linux/instantclient/$(echo $ORACLE_VERSION | tr -d '.')/instantclient-basiclite-linux.x64-${ORACLE_VERSION}dbru.zip && \
     wget https://download.oracle.com/otn_software/linux/instantclient/$(echo $ORACLE_VERSION | tr -d '.')/instantclient-sdk-linux.x64-${ORACLE_VERSION}dbru.zip && \
     mv instantclient-basiclite-linux.x64-${ORACLE_VERSION}dbru.zip instantclient-basiclite-linuxx64.zip && \
-    mv instantclient-sdk-linux.x64-${ORACLE_VERSION}dbru.zip instantclient-sdk-linuxx64.zip && 
-    
-RUN unzip instantclient-basiclite-linuxx64.zip && \
-    unzip instantclient-sdk-linuxx64.zip && \
-    rm -f instantclient-basiclite-linuxx64.zip instantclient-sdk-linuxx64.zip && 
+    mv instantclient-sdk-linux.x64-${ORACLE_VERSION}dbru.zip instantclient-sdk-linuxx64.zip && \
+    unzip -n instantclient-basiclite-linuxx64.zip && \
+    unzip -n instantclient-sdk-linuxx64.zip && \
+    rm -f instantclient-basiclite-linuxx64.zip instantclient-sdk-linuxx64.zip
+
 
 RUN echo /opt/oracle/instantclient* > /etc/ld.so.conf.d/oracle-instantclient.conf && \
     ldconfig
 
 ENV ORACLE_HOME=/opt/oracle/instantclient*
 ENV LD_LIBRARY_PATH=$ORACLE_HOME
+ENV PATH=$ORACLE_HOME:$PATH
 
 # Clone and build oracle_fdw
 RUN git clone https://github.com/laurenz/oracle_fdw.git \
-    && cd oracle_fdw \
-    && make ORACLE_HOME=$ORACLE_HOME \
-    && make install
+    && cd oracle_fdw \ 
+    && make && make install
+
+# RUN make ORACLE_HOME=$ORACLE_HOME \
+#     && make install
 
 # Add extension to postgresql.conf
 # RUN echo "shared_preload_libraries = 'oracle_fdw'" >> /usr/share/postgresql/postgresql.conf.sample
