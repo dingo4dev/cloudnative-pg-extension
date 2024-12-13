@@ -26,11 +26,13 @@ RUN mkdir -p /opt/oracle && \
     wget https://download.oracle.com/otn_software/linux/instantclient/$(echo $ORACLE_VERSION | tr -d '.')/instantclient-basiclite-linux.x64-${ORACLE_VERSION}dbru.zip && \
     wget https://download.oracle.com/otn_software/linux/instantclient/$(echo $ORACLE_VERSION | tr -d '.')/instantclient-sdk-linux.x64-${ORACLE_VERSION}dbru.zip && \
     mv instantclient-basiclite-linux.x64-${ORACLE_VERSION}dbru.zip instantclient-basiclite-linuxx64.zip && \
-    mv instantclient-sdk-linux.x64-${ORACLE_VERSION}dbru.zip instantclient-sdk-linuxx64.zip && \
-    unzip instantclient-basiclite-linuxx64.zip && \
+    mv instantclient-sdk-linux.x64-${ORACLE_VERSION}dbru.zip instantclient-sdk-linuxx64.zip && 
+    
+RUN unzip instantclient-basiclite-linuxx64.zip && \
     unzip instantclient-sdk-linuxx64.zip && \
-    rm -f instantclient-basiclite-linuxx64.zip instantclient-sdk-linuxx64.zip && \
-    echo /opt/oracle/instantclient* > /etc/ld.so.conf.d/oracle-instantclient.conf && \
+    rm -f instantclient-basiclite-linuxx64.zip instantclient-sdk-linuxx64.zip && 
+
+RUN echo /opt/oracle/instantclient* > /etc/ld.so.conf.d/oracle-instantclient.conf && \
     ldconfig
 
 ENV ORACLE_HOME=/opt/oracle/instantclient*
