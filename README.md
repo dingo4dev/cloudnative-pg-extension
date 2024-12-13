@@ -68,6 +68,19 @@ CREATE SERVER oracle_server
   OPTIONS (dbserver '//oracle-host:1521/ORCLPDB1');
 ```
 
+```sql
+-- or connect with TNS service
+CREATE SERVER oracle_server
+  FOREIGN DATA WRAPPER oracle_fdw
+  OPTIONS (dbserver
+  '(description=(load_balance=on)(failover=on)
+  (address_list=(source_route=yes)
+    (address=(protocol=tcp)(host=oracle-host)(port=1521))
+    (address=(protocol=tcp)(host=oracle-host)(port=1522))
+  )
+  (connect_data=(service_name=ORCLPDB1)))'))
+```
+
 Replace `oracle-host` with your Oracle server's hostname or IP address, and `ORCLPDB1` with your Oracle service name.
 
 3. Create a user mapping:
