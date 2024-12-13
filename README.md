@@ -140,6 +140,27 @@ docker logs postgres-oracle
 - Use `EXPLAIN ANALYZE` to understand query execution plans involving foreign tables.
 - Consider creating materialized views for frequently accessed Oracle data to improve query performance.
 
+### Update & Delete Foreign Server & Table
+
+USE `ADD`, `SET`, `DROP` for update options
+
+#### Update Server Options
+
+```sql
+ALTER server oracle_server
+OPTIONS (SET dbserver '//oracle-host:1521/ORCLPDB1');
+```
+
+#### Update & Remove Foreign TABLE Options
+
+```sql
+alter FOREIGN TABLE oracle_employees
+options ( SET table 'oracle_employees_new', DROP schema);
+```
+
+
+
+
 ## Data Flow
 
 When a query is executed against a foreign table in PostgreSQL:
