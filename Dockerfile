@@ -34,7 +34,7 @@ RUN mkdir -p /opt/oracle && cd /opt/oracle &&\
 RUN echo /opt/oracle/instantclient* > /etc/ld.so.conf.d/oracle-instantclient.conf && \
     ldconfig
 
-ENV ORACLE_HOME=/opt/oracle/instantclient*
+ENV ORACLE_HOME=/opt/oracle/instantclient_19_25
 ENV LD_LIBRARY_PATH=$ORACLE_HOME
 ENV PATH=$ORACLE_HOME:$PATH
 
