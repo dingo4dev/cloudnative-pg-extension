@@ -5,9 +5,10 @@ This project provides a Docker image for PostgreSQL with Oracle Foreign Data Wra
 The image is built on top of the CloudNative PostgreSQL image and includes the Oracle Instant Client and the oracle_fdw extension. This setup allows PostgreSQL to efficiently query and manipulate data stored in Oracle databases, facilitating data integration and migration scenarios.
 
 Key features of this Docker image include:
-- PostgreSQL 17 as the base database system
+- PostgreSQL 17-bullseye as the base database system
 - Oracle Instant Client (version 19.25.0.0.0) for Oracle database connectivity
 - oracle_fdw extension for creating foreign tables linked to Oracle
+- pg_cron extension for scheduling PostgreSQL jobs
 - Optimized for CloudNative PostgreSQL environments
 
 ## Repository Structure
@@ -158,9 +159,6 @@ alter FOREIGN TABLE oracle_employees
 options ( SET table 'oracle_employees_new', DROP schema);
 ```
 
-
-
-
 ## Data Flow
 
 When a query is executed against a foreign table in PostgreSQL:
@@ -187,10 +185,27 @@ The project defines the following infrastructure in the Dockerfile:
   - Purpose: Provides connectivity to Oracle databases
 - oracle_fdw Extension:
   - Purpose: Enables creation and use of foreign tables linked to Oracle databases
+- pg_cron Extension:
+  - Purpose: Allows scheduling of PostgreSQL jobs
 - Environment Variables:
   - ORACLE_HOME: Set to the Oracle Instant Client directory
   - LD_LIBRARY_PATH: Set to the Oracle Instant Client directory
 - User Configuration:
   - postgres user UID changed to 26 for enhanced container security
 
-These components work together to create a PostgreSQL environment capable of interacting with Oracle databases through foreign data wrappers.
+These components work together to create a PostgreSQL environment capable of interacting with Oracle databases through foreign data wrappers and scheduling PostgreSQL jobs.
+
+## Recent Changes
+
+This section documents the recent changes and updates to the project:
+
+- Initial release of the PostgreSQL Docker image with Oracle FDW support
+- Base image: CloudNative PostgreSQL 17-bullseye
+- Included Oracle Instant Client version 19.25.0.0.0
+- Added oracle_fdw extension for Oracle database connectivity
+- Integrated pg_cron extension for job scheduling
+- Set up environment variables for Oracle Instant Client
+- Changed postgres user UID to 26 for improved container security
+- Optimized for CloudNative PostgreSQL environments
+
+Note: This changelog represents the current state of the project. Future updates will be added to this section as they occur.
