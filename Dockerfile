@@ -55,8 +55,8 @@ RUN git clone https://github.com/laurenz/oracle_fdw.git \
 #     && make install
 
 # Add extension to postgresql.conf
-RUN echo "shared_preload_libraries = 'oracle_fdw,pg_cron,pg_audit'" >> /var/lib/postgresql/data/pgdata/postgresql.conf
-RUN echo "cron.database_name = 'postgres'" >> /var/lib/postgresql/data/pgdata/postgresql.conf
+RUN echo "shared_preload_libraries = 'oracle_fdw,pg_cron'" >> /usr/share/postgresql/postgresql.conf.sample
+RUN echo "cron.database_name = 'postgres'" >> /usr/share/postgresql/postgresql.conf.sample
 
 
 # Cleanup
