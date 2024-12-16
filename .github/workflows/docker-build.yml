@@ -30,7 +30,7 @@ jobs:
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/postgres-container:17.0.2
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/postgres-container:17.1.0
           build-args: |
             PG_MAJOR=17
             ORACLE_VERSION=19.25.0.0.0
@@ -62,7 +62,7 @@ jobs:
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ghcr.io/${{ steps.lower-repo.outputs.repository }}:17.0.2
+          tags: ghcr.io/${{ steps.lower-repo.outputs.repository }}:17.1.0
           build-args: |
             PG_MAJOR=17
             ORACLE_VERSION=19.25.0.0.0

@@ -56,6 +56,8 @@ RUN git clone https://github.com/laurenz/oracle_fdw.git \
 
 # Add extension to postgresql.conf
 RUN echo "shared_preload_libraries = 'oracle_fdw,pg_cron'" >> /usr/share/postgresql/postgresql.conf
+RUN echo "cron.database_name = 'postgres'" >> /var/lib/postgresql/data/postgresql.conf
+
 
 # Cleanup
 RUN apt-get remove -y build-essential git postgresql-server-dev-$PG_MAJOR \
