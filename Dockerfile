@@ -5,7 +5,7 @@ FROM ghcr.io/cloudnative-pg/postgresql:$PG_MAJOR-bullseye
 LABEL maintainer="DinGo4Dev <stanleylkal@gmail.com>"
 LABEL org.opencontainers.image.title="CloudNative PostgreSQL with Oracle Integration"
 LABEL org.opencontainers.image.description="CloudNative PostgreSQL 17 container with Oracle integration support (Oracle version 19.25.0.0.0)"
-LABEL org.opencontainers.image.version="17.1.1"
+LABEL org.opencontainers.image.version="17.1.2"
 LABEL org.opencontainers.image.vendor="DinGo4Dev"
 LABEL org.opencontainers.image.licenses="GNU3"
 LABEL org.opencontainers.image.source="https://github.com/your-repo/cloudnative-pg-extension"
@@ -55,9 +55,8 @@ RUN git clone https://github.com/laurenz/oracle_fdw.git \
 #     && make install
 
 # Add extension to postgresql.conf
-RUN echo "shared_preload_libraries = 'oracle_fdw'" >> /usr/share/postgresql/postgresql.conf
-RUN echo "shared_preload_libraries = 'pg_cron'" >> /usr/share/postgresql/postgresql.conf
-RUN echo "cron.database_name = 'postgres'" >> /var/lib/postgresql/data/postgresql.conf
+RUN echo "shared_preload_libraries = 'oracle_fdw,pg_cron'" >> /usr/share/postgresql/postgresql.conf
+RUN echo "cron.database_name = 'postgres'" >> /usr/share/postgresql/postgresql.conf
 
 
 # Cleanup
