@@ -114,6 +114,28 @@ This creates a foreign table `oracle_employees` that maps to the `EMPLOYEES` tab
 SELECT * FROM oracle_employees LIMIT 5;
 ```
 
+### Using PG CRON
+
+To use the pg_cron extension in cnpg operator in k8s enviroment:
+
+1. Install the postgres database first
+2. Add `pg_cron` in `shared_preload_libraries`:
+    ``` yaml
+      postgresql:
+        shared_preload_libraries:
+        - pg_cron
+    ```
+3. Add database `app` (default `postgres`) to dedicated `cron.data_basename`. As cnpg will create `app` database for app use.
+4. Login to `postgres` and create extesion
+  ``` sql
+  CREATE EXTENSION pg_cron;
+  -- Grant permission to app user for using cron -- 
+  GRANT USAGE ON SCHEMA cron TO app;
+  ```
+
+
+
+
 ### Troubleshooting
 
 #### ORA-12154: TNS:could not resolve the connect identifier specified
