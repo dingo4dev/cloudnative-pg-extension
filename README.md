@@ -129,8 +129,10 @@ To use the pg_cron extension in cnpg operator in k8s enviroment:
 4. Login to `postgres` and create extesion
   ``` sql
   CREATE EXTENSION pg_cron;
-  -- Grant permission to app user for using cron -- 
+  -- Grant usage to app user for using cron -- 
   GRANT USAGE ON SCHEMA cron TO app;
+  -- Grant permissions on cron schema tables
+  GRANT SELECT, UPDATE, INSERT, DELETE ON ALL TABLES IN SCHEMA cron TO app;
   ```
 
 
