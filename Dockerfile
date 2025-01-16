@@ -5,7 +5,7 @@ FROM ghcr.io/cloudnative-pg/postgresql:$PG_MAJOR-bullseye
 LABEL maintainer="DinGo4Dev <stanleylkal@gmail.com>"
 LABEL org.opencontainers.image.title="CloudNative PostgreSQL with Oracle Integration"
 LABEL org.opencontainers.image.description="CloudNative PostgreSQL 17 container with Oracle integration support (Oracle version 19.25.0.0.0)"
-LABEL org.opencontainers.image.version="17.1.4"
+LABEL org.opencontainers.image.version="17.1.5"
 LABEL org.opencontainers.image.vendor="DinGo4Dev"
 LABEL org.opencontainers.image.licenses="GNU3"
 LABEL org.opencontainers.image.source="https://github.com/your-repo/cloudnative-pg-extension"
@@ -26,6 +26,7 @@ RUN apt-get update && apt-get install -y \
     libaio1 \
     postgresql-server-dev-$PG_MAJOR \
     postgresql-$PG_MAJOR-cron \
+    postgresql_anonymizer_$PG_MAJOR \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Oracle Instant Client for support oracle 11g

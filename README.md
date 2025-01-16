@@ -9,6 +9,7 @@ Key features of this Docker image include:
 - Oracle Instant Client (version 19.25.0.0.0) for Oracle database connectivity
 - oracle_fdw extension for creating foreign tables linked to Oracle
 - pg_cron extension for scheduling PostgreSQL jobs
+- PostgreSQL Anonymizer for data anonymization
 - Optimized for CloudNative PostgreSQL environments
 
 ## Repository Structure
@@ -79,7 +80,7 @@ CREATE SERVER oracle_server
     (address=(protocol=tcp)(host=oracle-host)(port=1521))
     (address=(protocol=tcp)(host=oracle-host)(port=1522))
   )
-  (connect_data=(service_name=ORCLPDB1)))'))
+  (connect_data=(service_name=ORCLPDB1)))');
 ```
 
 Replace `oracle-host` with your Oracle server's hostname or IP address, and `ORCLPDB1` with your Oracle service name.
@@ -135,8 +136,44 @@ To use the pg_cron extension in cnpg operator in k8s enviroment:
   GRANT SELECT, UPDATE, INSERT, DELETE ON ALL TABLES IN SCHEMA cron TO app;
   ```
 
+### PostgreSQL Anonymizer
 
+This Docker image includes PostgreSQL Anonymizer, an extension that provides data anonymization capabilities for your PostgreSQL database.
 
+To use PostgreSQL Anonymizer:
+
+1. Enable the extension in your database:
+
+```sql
+CREATE EXTENSION IF NOT EXISTS anon;
+```
+
+2. Create an anonymization schema:
+
+```sql
+SELECT anon.init();
+```
+
+3. Define anonymization rules for your tables. For example:
+
+```sql
+-- Anonymize the 'email' column in the 'users' table
+UPDATE anon.mask_columns
+SET 
+    function_parameters = '{"email": "email"}'
+WHERE 
+    attname = 'email' AND relname = 'users';
+```
+
+4. Apply the anonymization:
+
+```sql
+SELECT anon.anonymize_database();
+```
+
+This will anonymize the data according to the rules you've defined.
+
+For more advanced usage and detailed configuration options, please refer to the [official PostgreSQL Anonymizer documentation](https://postgresql-anonymizer.readthedocs.io/).
 
 ### Troubleshooting
 
@@ -211,13 +248,40 @@ The project defines the following infrastructure in the Dockerfile:
   - Purpose: Enables creation and use of foreign tables linked to Oracle databases
 - pg_cron Extension:
   - Purpose: Allows scheduling of PostgreSQL jobs
+- PostgreSQL Anonymizer:
+  - Purpose: Provides data anonymization capabilities
 - Environment Variables:
   - ORACLE_HOME: Set to the Oracle Instant Client directory
   - LD_LIBRARY_PATH: Set to the Oracle Instant Client directory
 - User Configuration:
   - postgres user UID changed to 26 for enhanced container security
 
-These components work together to create a PostgreSQL environment capable of interacting with Oracle databases through foreign data wrappers and scheduling PostgreSQL jobs.
+These components work together to create a PostgreSQL environment capable of interacting with Oracle databases through foreign data wrappers, scheduling PostgreSQL jobs, and anonymizing sensitive data.
+
+## Contributing
+
+We welcome contributions to improve this PostgreSQL Docker image with Oracle FDW support. Here's how you can contribute:
+
+1. **Reporting Issues**: If you find a bug or have a suggestion for improvement, please open an issue on our GitHub repository. Provide as much detail as possible, including steps to reproduce the issue if applicable.
+
+2. **Submitting Pull Requests**: If you'd like to contribute code:
+   - Fork the repository
+   - Create a new branch for your feature or bug fix
+   - Make your changes, following our code style guidelines
+   - Write or update tests as necessary
+   - Submit a pull request with a clear description of your changes
+
+3. **Code Style**: Please follow the existing code style in the project. For SQL, use uppercase for keywords and lowercase for identifiers.
+
+4. **Commit Messages**: Write clear, concise commit messages describing the changes you've made.
+
+5. **Documentation**: Update the README.md file if your changes require updates to the usage instructions or add new features.
+
+6. **Testing**: Ensure that your changes don't break existing functionality. Add new tests for new features.
+
+By contributing, you agree that your contributions will be licensed under the same license as the project.
+
+Thank you for helping improve this project!
 
 ## Recent Changes
 
@@ -228,6 +292,7 @@ This section documents the recent changes and updates to the project:
 - Included Oracle Instant Client version 19.25.0.0.0
 - Added oracle_fdw extension for Oracle database connectivity
 - Integrated pg_cron extension for job scheduling
+- Added PostgreSQL Anonymizer for data anonymization capabilities
 - Set up environment variables for Oracle Instant Client
 - Changed postgres user UID to 26 for improved container security
 - Optimized for CloudNative PostgreSQL environments
