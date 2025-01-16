@@ -148,27 +148,40 @@ To use PostgreSQL Anonymizer:
 CREATE EXTENSION IF NOT EXISTS anon;
 ```
 
-2. Create an anonymization schema:
+2. Init Dynamic masking:
 
 ```sql
-SELECT anon.init();
+ALTER DATABASE app SET anon.transparent_dynamic_masking TO true;
+-- SELECT anon.init()  --# This is legacy
 ```
 
-3. Define anonymization rules for your tables. For example:
+3. Create anonymous role for masking role.
+
+  ```sql
+  CREATE ROLE anonymous LOGIN  -- # password 'xxxxx'
+  SECURITY LABEL FOR anon ON ROLE anonymous IS 'MASKED'
+  GRANT pg_read_all_data to anonymous;
+  --# OR 
+  --GRANT USAGE ON SCHEMA public TO anonymous;
+  --GRANT SELECT ON ALL TABLES IN SCHEMA public TO anonymous;
+
+  --# Remove Privilege
+  --revoke select on all tables in schema public from anonymous;
+  --revoke USAGE ON SCHEMA public FROM anonymous;
+  ```
+
+4.  Define anonymization rules for your tables. For example:
 
 ```sql
--- Anonymize the 'email' column in the 'users' table
-UPDATE anon.mask_columns
-SET 
-    function_parameters = '{"email": "email"}'
-WHERE 
-    attname = 'email' AND relname = 'users';
+-- Anonymize the 'email' column in the 'account' table
+SECURITY LABEL FOR anon ON COLUMN public.account.email IS 'MASKED WITH FUNCTION anon.partial(email,2,$$****$$,5)';
+SECURITY LABEL FOR anon ON COLUMN public.account.id IS 'MASKED WITH VALUE $$******$$';
 ```
 
-4. Apply the anonymization:
+5. Check table whether is masked on user `anonymous`:
 
 ```sql
-SELECT anon.anonymize_database();
+select * from public.account;
 ```
 
 This will anonymize the data according to the rules you've defined.
