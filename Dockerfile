@@ -25,9 +25,18 @@ RUN apt-get update && apt-get install -y \
     unzip \
     libaio1 \
     postgresql-server-dev-$PG_MAJOR \
-    postgresql-$PG_MAJOR-cron \
-    postgresql_anonymizer_$PG_MAJOR \
-    && rm -rf /var/lib/apt/lists/*
+    postgresql-$PG_MAJOR-cron 
+
+# Install postgresql_anonymizer extension
+RUN apt install -y curl lsb-release \
+    && echo deb http://apt.dalibo.org/labs $(lsb_release -cs)-dalibo main > /etc/apt/sources.list.d/dalibo-labs.list \
+    && curl -fsSL -o /etc/apt/trusted.gpg.d/dalibo-labs.gpg https://apt.dalibo.org/labs/debian-dalibo.gpg \
+    && apt update \
+    && apt install -y postgresql_anonymizer_$PG_MAJOR \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt clean
+
+
 
 # Install Oracle Instant Client for support oracle 11g
 RUN mkdir -p /opt/oracle && cd /opt/oracle &&\
