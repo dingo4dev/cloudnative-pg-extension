@@ -2,13 +2,13 @@
 ARG PG_MAJOR=17
 FROM ghcr.io/cloudnative-pg/postgresql:$PG_MAJOR-bullseye
 
-LABEL maintainer="DinGo4Dev <stanleylkal@gmail.com>"
+LABEL maintainer="dingo4dev <stanleylkal@gmail.com>"
 LABEL org.opencontainers.image.title="CloudNative PostgreSQL with Oracle Integration"
 LABEL org.opencontainers.image.description="CloudNative PostgreSQL 17 container with Oracle integration support (Oracle version 19.25.0.0.0)"
 LABEL org.opencontainers.image.version="17.1.5"
-LABEL org.opencontainers.image.vendor="DinGo4Dev"
+LABEL org.opencontainers.image.vendor="dingo4dev"
 LABEL org.opencontainers.image.licenses="GNU3"
-LABEL org.opencontainers.image.source="https://github.com/your-repo/cloudnative-pg-extension"
+LABEL org.opencontainers.image.source="https://github.com/dingo4dev/cloudnative-pg-extension"
 
 ARG ORACLE_VERSION=19.25.0.0.0
 
