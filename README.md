@@ -20,10 +20,27 @@ This project supports multiple PostgreSQL versions:
 
 Each version is built with the same Oracle integration capabilities.
 
+### Available Docker Images
+
+The images are automatically built and published to:
+
+**Docker Hub:**
+- `{username}/postgres-container:17.1.5` - PostgreSQL 17
+- `{username}/postgres-container:18.4` - PostgreSQL 18
+
+**GitHub Container Registry:**
+- `ghcr.io/{username}/postgres-container:17.1.5` - PostgreSQL 17
+- `ghcr.io/{username}/postgres-container:18.4` - PostgreSQL 18
+
+Replace `{username}` with the actual Docker Hub username or GitHub repository owner.
+
 ## Repository Structure
 
-- `Dockerfile`: Contains the instructions for building the Docker image
+- `Dockerfile`: Contains the instructions for building the Docker image (supports multiple PostgreSQL versions)
+- `build-versions.sh`: Helper script to build multiple PostgreSQL versions
+- `.github/workflows/docker-build.yml`: CI/CD workflow for automated multi-version builds
 - `README.md`: This file, providing project documentation
+- `tutorials/`: Directory containing usage tutorials and examples
 
 ## Usage Instructions
 
@@ -36,7 +53,24 @@ Each version is built with the same Oracle integration capabilities.
 
 To build the Docker image locally, you can specify the PostgreSQL version using build arguments:
 
-#### Build PostgreSQL 17:
+#### Using the Build Script (Recommended)
+
+We provide a convenient build script that handles version management:
+
+```bash
+# Build all supported versions
+./build-versions.sh all
+
+# Build a specific version
+./build-versions.sh 17  # Builds PostgreSQL 17.1.5
+./build-versions.sh 18  # Builds PostgreSQL 18.4
+```
+
+#### Manual Build Commands
+
+Alternatively, you can build manually with Docker:
+
+##### Build PostgreSQL 17:
 ```bash
 docker build \
   --build-arg PG_MAJOR=17 \
@@ -45,7 +79,7 @@ docker build \
   -t postgres-oracle-fdw:17.1.5 .
 ```
 
-#### Build PostgreSQL 18:
+##### Build PostgreSQL 18:
 ```bash
 docker build \
   --build-arg PG_MAJOR=18 \
@@ -54,7 +88,7 @@ docker build \
   -t postgres-oracle-fdw:18.4 .
 ```
 
-#### Build with default values (PostgreSQL 18.4):
+##### Build with default values (PostgreSQL 18.4):
 ```bash
 docker build -t postgres-oracle-fdw .
 ```
