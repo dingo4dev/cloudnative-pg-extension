@@ -9,6 +9,14 @@ on:
 jobs:
   docker:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        pg_version:
+          - major: "17"
+            version: "17.1.5"
+          - major: "18"
+            version: "18.4"
+        oracle_version: ["19.25.0.0.0"]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -30,10 +38,11 @@ jobs:
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/postgres-container:17.1.5
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/postgres-container:${{ matrix.pg_version.version }}
           build-args: |
-            PG_MAJOR=17
-            ORACLE_VERSION=19.25.0.0.0
+            PG_MAJOR=${{ matrix.pg_version.major }}
+            PG_VERSION=${{ matrix.pg_version.version }}
+            ORACLE_VERSION=${{ matrix.oracle_version }}
           # tags: |          
           #   ${{ secrets.DOCKERHUB_USERNAME }}/postgres-container:latest
           #   ${{ secrets.DOCKERHUB_USERNAME }}/postgres-container:v1.0.0-rc.1
@@ -62,7 +71,8 @@ jobs:
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ghcr.io/${{ steps.lower-repo.outputs.repository }}:17.1.5
+          tags: ghcr.io/${{ steps.lower-repo.outputs.repository }}:${{ matrix.pg_version.version }}
           build-args: |
-            PG_MAJOR=17
-            ORACLE_VERSION=19.25.0.0.0
+            PG_MAJOR=${{ matrix.pg_version.major }}
+            PG_VERSION=${{ matrix.pg_version.version }}
+            ORACLE_VERSION=${{ matrix.oracle_version }}

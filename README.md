@@ -5,12 +5,20 @@ This project provides a Docker image for PostgreSQL with Oracle Foreign Data Wra
 The image is built on top of the CloudNative PostgreSQL image and includes the Oracle Instant Client and the oracle_fdw extension. This setup allows PostgreSQL to efficiently query and manipulate data stored in Oracle databases, facilitating data integration and migration scenarios.
 
 Key features of this Docker image include:
-- PostgreSQL 17-bullseye as the base database system
+- PostgreSQL 17 and 18 support (configurable via build arguments)
 - Oracle Instant Client (version 19.25.0.0.0) for Oracle database connectivity
 - oracle_fdw extension for creating foreign tables linked to Oracle
 - pg_cron extension for scheduling PostgreSQL jobs
 - PostgreSQL Anonymizer for data anonymization
 - Optimized for CloudNative PostgreSQL environments
+
+## Supported PostgreSQL Versions
+
+This project supports multiple PostgreSQL versions:
+- PostgreSQL 17 (version 17.1.5)
+- PostgreSQL 18 (version 18.4)
+
+Each version is built with the same Oracle integration capabilities.
 
 ## Repository Structure
 
@@ -26,8 +34,27 @@ Key features of this Docker image include:
 
 ### Building the Docker Image
 
-To build the Docker image locally, run the following command in the repository root:
+To build the Docker image locally, you can specify the PostgreSQL version using build arguments:
 
+#### Build PostgreSQL 17:
+```bash
+docker build \
+  --build-arg PG_MAJOR=17 \
+  --build-arg PG_VERSION=17.1.5 \
+  --build-arg ORACLE_VERSION=19.25.0.0.0 \
+  -t postgres-oracle-fdw:17.1.5 .
+```
+
+#### Build PostgreSQL 18:
+```bash
+docker build \
+  --build-arg PG_MAJOR=18 \
+  --build-arg PG_VERSION=18.4 \
+  --build-arg ORACLE_VERSION=19.25.0.0.0 \
+  -t postgres-oracle-fdw:18.4 .
+```
+
+#### Build with default values (PostgreSQL 18.4):
 ```bash
 docker build -t postgres-oracle-fdw .
 ```
@@ -254,8 +281,9 @@ Note: The Oracle Instant Client and oracle_fdw extension act as intermediaries, 
 
 The project defines the following infrastructure in the Dockerfile:
 
-- Base Image: `ghcr.io/cloudnative-pg/postgresql:17-bullseye`
-- Oracle Instant Client: Version 19.25.0.0.0
+- Base Image: `ghcr.io/cloudnative-pg/postgresql:{PG_MAJOR}-bullseye`
+  - Supports PostgreSQL 17 and 18 (configurable via PG_MAJOR build argument)
+- Oracle Instant Client: Version 19.25.0.0.0 (configurable via ORACLE_VERSION build argument)
   - Purpose: Provides connectivity to Oracle databases
 - oracle_fdw Extension:
   - Purpose: Enables creation and use of foreign tables linked to Oracle databases
@@ -300,7 +328,14 @@ Thank you for helping improve this project!
 
 This section documents the recent changes and updates to the project:
 
-- Initial release of the PostgreSQL Docker image with Oracle FDW support
+### Version 18.4 Support Added
+- Added support for PostgreSQL 18.4
+- Implemented matrix build strategy for building multiple PostgreSQL versions
+- Updated CI/CD workflow to build both PostgreSQL 17.1.5 and 18.4
+- Made Dockerfile version-agnostic with build arguments
+- Updated documentation to reflect multi-version support
+
+### Initial Release
 - Base image: CloudNative PostgreSQL 17-bullseye
 - Included Oracle Instant Client version 19.25.0.0.0
 - Added oracle_fdw extension for Oracle database connectivity

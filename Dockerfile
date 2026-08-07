@@ -1,16 +1,19 @@
 # Reference: https://cloudnative-pg.io/blog/creating-container-images/
-ARG PG_MAJOR=17
+ARG PG_MAJOR=18
+ARG PG_VERSION=18.4
 FROM ghcr.io/cloudnative-pg/postgresql:$PG_MAJOR-bullseye
+
+ARG PG_MAJOR
+ARG PG_VERSION
+ARG ORACLE_VERSION=19.25.0.0.0
 
 LABEL maintainer="dingo4dev <stanleylkal@gmail.com>"
 LABEL org.opencontainers.image.title="CloudNative PostgreSQL with Oracle Integration"
-LABEL org.opencontainers.image.description="CloudNative PostgreSQL 17 container with Oracle integration support (Oracle version 19.25.0.0.0)"
-LABEL org.opencontainers.image.version="17.1.5"
+LABEL org.opencontainers.image.description="CloudNative PostgreSQL ${PG_MAJOR} (${PG_VERSION}) container with Oracle integration support (Oracle version ${ORACLE_VERSION})"
+LABEL org.opencontainers.image.version="${PG_VERSION}"
 LABEL org.opencontainers.image.vendor="dingo4dev"
 LABEL org.opencontainers.image.licenses="GNU3"
 LABEL org.opencontainers.image.source="https://github.com/dingo4dev/cloudnative-pg-extension"
-
-ARG ORACLE_VERSION=19.25.0.0.0
 
 USER root
 
