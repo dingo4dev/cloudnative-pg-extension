@@ -1,53 +1,134 @@
 # PostgreSQL Docker Image with Oracle FDW Support
 
+[![Build and Push Docker Image](https://github.com/dingo4dev/cloudnative-pg-extension/actions/workflows/docker-build.yml/badge.svg)](https://github.com/dingo4dev/cloudnative-pg-extension/actions/workflows/docker-build.yml)
+[![Security Scan](https://github.com/dingo4dev/cloudnative-pg-extension/actions/workflows/security-scan.yml/badge.svg)](https://github.com/dingo4dev/cloudnative-pg-extension/actions/workflows/security-scan.yml)
+
 This project provides a Docker image for PostgreSQL with Oracle Foreign Data Wrapper (FDW) support, enabling seamless interaction between PostgreSQL and Oracle databases.
 
 The image is built on top of the CloudNative PostgreSQL image and includes the Oracle Instant Client and the oracle_fdw extension. This setup allows PostgreSQL to efficiently query and manipulate data stored in Oracle databases, facilitating data integration and migration scenarios.
 
-Key features of this Docker image include:
-- PostgreSQL 17 and 18 support (configurable via build arguments)
-- Oracle Instant Client (version 19.25.0.0.0) for Oracle database connectivity
-- oracle_fdw extension for creating foreign tables linked to Oracle
-- pg_cron extension for scheduling PostgreSQL jobs
-- PostgreSQL Anonymizer for data anonymization
-- Optimized for CloudNative PostgreSQL environments
+## ✨ Key Features
+
+- 🐘 **Multiple PostgreSQL versions**: 16, 17, and 18 support
+- 🔗 **Oracle Integration**: Oracle Instant Client (19.25.0.0.0) with oracle_fdw extension (pinned version)
+- ⏰ **Job Scheduling**: pg_cron extension for scheduling PostgreSQL jobs
+- 🔒 **Data Anonymization**: PostgreSQL Anonymizer for data masking
+- 🏗️ **Multi-Architecture**: AMD64 and ARM64 support
+- 🔍 **Health Checks**: Built-in health check for container orchestration
+- ☁️ **Cloud Native**: Optimized for CloudNative PostgreSQL operator in Kubernetes
+- 🔐 **Security**: Automated security scanning with Trivy
 
 ## Supported PostgreSQL Versions
 
 This project supports multiple PostgreSQL versions:
+- PostgreSQL 16 (version 16.6)
 - PostgreSQL 17 (version 17.1.5)
-- PostgreSQL 18 (version 18.4)
+- PostgreSQL 18 (version 18.4) - **Latest**
 
 Each version is built with the same Oracle integration capabilities.
 
 ### Available Docker Images
 
-The images are automatically built and published to:
+The images are automatically built and published to both Docker Hub and GitHub Container Registry:
 
-**Docker Hub:**
-- `{username}/postgres-container:17.1.5` - PostgreSQL 17
-- `{username}/postgres-container:18.4` - PostgreSQL 18
+**Version-specific tags:**
+- `dingo4dev/postgres-container:16.6` or `ghcr.io/dingo4dev/postgres-container:16.6`
+- `dingo4dev/postgres-container:17.1.5` or `ghcr.io/dingo4dev/postgres-container:17.1.5`
+- `dingo4dev/postgres-container:18.4` or `ghcr.io/dingo4dev/postgres-container:18.4`
 
-**GitHub Container Registry:**
-- `ghcr.io/{username}/postgres-container:17.1.5` - PostgreSQL 17
-- `ghcr.io/{username}/postgres-container:18.4` - PostgreSQL 18
+**Major version tags:**
+- `dingo4dev/postgres-container:16` - Latest PostgreSQL 16.x
+- `dingo4dev/postgres-container:17` - Latest PostgreSQL 17.x
+- `dingo4dev/postgres-container:18` - Latest PostgreSQL 18.x
 
-Replace `{username}` with the actual Docker Hub username or GitHub repository owner.
+**Latest tag:**
+- `dingo4dev/postgres-container:latest` - Always points to the newest PostgreSQL version (18.4)
+
+**Multi-Architecture:**
+All images support both `linux/amd64` and `linux/arm64` architectures.
 
 ## Repository Structure
 
-- `Dockerfile`: Contains the instructions for building the Docker image (supports multiple PostgreSQL versions)
+- `Dockerfile`: Multi-version PostgreSQL image with Oracle FDW
+- `docker-compose.yml`: Docker Compose setup for local development
 - `build-versions.sh`: Helper script to build multiple PostgreSQL versions
-- `.github/workflows/docker-build.yml`: CI/CD workflow for automated multi-version builds
-- `README.md`: This file, providing project documentation
-- `tutorials/`: Directory containing usage tutorials and examples
+- `.github/workflows/`: CI/CD workflows (build, test, security scanning)
+- `examples/kubernetes/`: Kubernetes deployment examples with CNPG operator
+- `init-scripts/`: Example initialization SQL scripts
+- `tutorials/`: Usage tutorials and examples
+- `CONTRIBUTING.md`: Contribution guidelines
+
+## 🚀 Quick Start
+
+The fastest way to get started is using Docker Compose:
+
+```bash
+# Clone the repository
+git clone https://github.com/dingo4dev/cloudnative-pg-extension.git
+cd cloudnative-pg-extension
+
+# Copy environment file
+cp .env.example .env
+
+# Start PostgreSQL with Oracle FDW
+docker-compose up -d
+
+# Check logs
+docker-compose logs -f
+
+# Connect to PostgreSQL
+docker-compose exec postgres psql -U postgres -d app
+```
+
+The extensions (oracle_fdw, pg_cron, anon) will be automatically initialized on first startup.
 
 ## Usage Instructions
 
 ### Prerequisites
 
-- Docker installed on your system
-- Access to the ghcr.io container registry
+- Docker 20.10 or later
+- Docker Compose (optional, for local development)
+- Access to ghcr.io or Docker Hub
+
+### Using Pre-built Images
+
+Pull and run a pre-built image:
+
+```bash
+# Pull latest version
+docker pull dingo4dev/postgres-container:latest
+
+# Or pull specific version
+docker pull dingo4dev/postgres-container:18.4
+
+# Run container
+docker run -d \
+  --name postgres-oracle \
+  -p 5432:5432 \
+  -e POSTGRES_PASSWORD=mysecretpassword \
+  -e POSTGRES_DB=app \
+  dingo4dev/postgres-container:latest
+```
+
+### Using Docker Compose
+
+For local development, use the provided `docker-compose.yml`:
+
+```bash
+# Start services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f postgres
+
+# Execute SQL
+docker-compose exec postgres psql -U postgres -d app -c "\dx"
+
+# Stop services
+docker-compose down
+```
+
+Customize by editing `.env` file or `docker-compose.yml`.
 
 ### Building the Docker Image
 
@@ -62,6 +143,7 @@ We provide a convenient build script that handles version management:
 ./build-versions.sh all
 
 # Build a specific version
+./build-versions.sh 16  # Builds PostgreSQL 16.6
 ./build-versions.sh 17  # Builds PostgreSQL 17.1.5
 ./build-versions.sh 18  # Builds PostgreSQL 18.4
 ```
@@ -70,38 +152,34 @@ We provide a convenient build script that handles version management:
 
 Alternatively, you can build manually with Docker:
 
-##### Build PostgreSQL 17:
 ```bash
-docker build \
-  --build-arg PG_MAJOR=17 \
-  --build-arg PG_VERSION=17.1.5 \
-  --build-arg ORACLE_VERSION=19.25.0.0.0 \
-  -t postgres-oracle-fdw:17.1.5 .
-```
-
-##### Build PostgreSQL 18:
-```bash
+# Build PostgreSQL 18 (latest)
 docker build \
   --build-arg PG_MAJOR=18 \
   --build-arg PG_VERSION=18.4 \
   --build-arg ORACLE_VERSION=19.25.0.0.0 \
+  --build-arg ORACLE_FDW_VERSION=ORACLE_FDW_2_7_0 \
+  -t postgres-oracle-fdw:18.4 .
+
+# Build for multiple architectures
+docker buildx build \
+  --platform linux/amd64,linux/arm64 \
+  --build-arg PG_MAJOR=18 \
+  --build-arg PG_VERSION=18.4 \
   -t postgres-oracle-fdw:18.4 .
 ```
 
-##### Build with default values (PostgreSQL 18.4):
-```bash
-docker build -t postgres-oracle-fdw .
-```
+### Deploying to Kubernetes
 
-### Running the Container
-
-To start a container using this image:
+For CloudNative PostgreSQL operator deployments, see the [Kubernetes examples](./examples/kubernetes/README.md).
 
 ```bash
-docker run -d --name postgres-oracle -p 5432:5432 -e POSTGRES_PASSWORD=mysecretpassword postgres-oracle-fdw
-```
+# Apply cluster configuration
+kubectl apply -f examples/kubernetes/cluster.yaml
 
-Replace `mysecretpassword` with a secure password of your choice.
+# Check cluster status
+kubectl get cluster postgres-oracle-fdw
+```
 
 ### Connecting to the Database
 
@@ -362,15 +440,30 @@ Thank you for helping improve this project!
 
 This section documents the recent changes and updates to the project:
 
+### Latest Enhancements (Current)
+- ✅ **Multi-Architecture Support**: Added ARM64 and AMD64 builds for all versions
+- ✅ **Health Checks**: Implemented container health checks for orchestration
+- ✅ **Latest Tag**: Added `:latest` tag pointing to newest PostgreSQL version
+- ✅ **PostgreSQL 16 Support**: Added PostgreSQL 16.6 to supported versions
+- ✅ **Version Pinning**: Pinned oracle_fdw to stable version (ORACLE_FDW_2_7_0)
+- ✅ **Docker Compose**: Added docker-compose.yml for local development
+- ✅ **Automated Testing**: CI/CD now includes extension loading tests
+- ✅ **Security Scanning**: Added Trivy security scanning workflow
+- ✅ **Kubernetes Examples**: Added CloudNative PostgreSQL operator manifests
+- ✅ **GitHub Templates**: Added PR template and issue templates
+- ✅ **Contributing Guide**: Added comprehensive CONTRIBUTING.md
+- ✅ **Dependabot**: Configured automated dependency updates
+- ✅ **Build Improvements**: Enhanced workflow with caching and parallel builds
+
 ### Version 18.4 Support Added
 - Added support for PostgreSQL 18.4
 - Implemented matrix build strategy for building multiple PostgreSQL versions
-- Updated CI/CD workflow to build both PostgreSQL 17.1.5 and 18.4
+- Updated CI/CD workflow to build PostgreSQL 16, 17, and 18
 - Made Dockerfile version-agnostic with build arguments
 - Updated documentation to reflect multi-version support
 
 ### Initial Release
-- Base image: CloudNative PostgreSQL 17-bullseye
+- Base image: CloudNative PostgreSQL bullseye
 - Included Oracle Instant Client version 19.25.0.0.0
 - Added oracle_fdw extension for Oracle database connectivity
 - Integrated pg_cron extension for job scheduling
@@ -378,5 +471,19 @@ This section documents the recent changes and updates to the project:
 - Set up environment variables for Oracle Instant Client
 - Changed postgres user UID to 26 for improved container security
 - Optimized for CloudNative PostgreSQL environments
+
+## Contributing
+
+We welcome contributions! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
+
+- 🐛 Report bugs via [GitHub Issues](https://github.com/dingo4dev/cloudnative-pg-extension/issues)
+- 💡 Request features via [GitHub Issues](https://github.com/dingo4dev/cloudnative-pg-extension/issues)
+- 🔧 Submit Pull Requests following our PR template
+- 📖 Improve documentation
+- ⭐ Star the repository if you find it useful!
+
+## License
+
+This project is licensed under the GNU General Public License v3.0 - see the [LICENSE.md](LICENSE.md) file for details.
 
 Note: This changelog represents the current state of the project. Future updates will be added to this section as they occur.
