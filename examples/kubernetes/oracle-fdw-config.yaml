@@ -1,0 +1,79 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: oracle-fdw-connection
+  namespace: default
+type: Opaque
+stringData:
+  server: "//oracle-host:1521/ORCLPDB1"
+  username: "oracle_user"
+  password: "oracle_password"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: oracle-fdw-setup
+  namespace: default
+data:
+  setup.sql: |
+    -- Create Oracle server using credentials from secret
+    CREATE SERVER IF NOT EXISTS oracle_server
+      FOREIGN DATA WRAPPER oracle_fdw
+      OPTIONS (dbserver '//oracle-host:1521/ORCLPDB1');
+    
+    -- Create user mapping
+    CREATE USER MAPPING IF NOT EXISTS FOR app
+      SERVER oracle_server
+      OPTIONS (user 'oracle_user', password 'oracle_password');
+    
+    -- Example foreign table
+    CREATE FOREIGN TABLE IF NOT EXISTS oracle_employees (
+      employee_id integer,
+      first_name text,
+      last_name text,
+      email text,
+      hire_date date
+    )
+      SERVER oracle_server
+      OPTIONS (schema 'HR', table 'EMPLOYEES');
+    
+    -- Grant access to app user
+    GRANT SELECT ON oracle_employees TO app;
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: setup-oracle-fdw
+  namespace: default
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: setup
+        image: ghcr.io/dingo4dev/postgres-container:18.4
+        command:
+        - /bin/bash
+        - -c
+        - |
+          # Wait for PostgreSQL cluster to be ready
+          until pg_isready -h postgres-oracle-fdw-rw -U app; do
+            echo "Waiting for PostgreSQL..."
+            sleep 5
+          done
+          
+          # Execute setup SQL
+          PGPASSWORD="${POSTGRES_PASSWORD}" psql -h postgres-oracle-fdw-rw -U app -d app -f /scripts/setup.sql
+        env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-oracle-fdw-app
+              key: password
+        volumeMounts:
+        - name: setup-scripts
+          mountPath: /scripts
+      volumes:
+      - name: setup-scripts
+        configMap:
+          name: oracle-fdw-setup

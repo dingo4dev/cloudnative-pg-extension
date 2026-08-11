@@ -1,24 +1,30 @@
 # Reference: https://cloudnative-pg.io/blog/creating-container-images/
-ARG PG_MAJOR=17
+ARG PG_MAJOR=18
+ARG PG_VERSION=18.4
 FROM ghcr.io/cloudnative-pg/postgresql:$PG_MAJOR-bullseye
+
+ARG PG_MAJOR
+ARG PG_VERSION
+ARG ORACLE_VERSION=19.25.0.0.0
+ARG ORACLE_FDW_VERSION=ORACLE_FDW_2_8_0
 
 LABEL maintainer="dingo4dev <stanleylkal@gmail.com>"
 LABEL org.opencontainers.image.title="CloudNative PostgreSQL with Oracle Integration"
-LABEL org.opencontainers.image.description="CloudNative PostgreSQL 17 container with Oracle integration support (Oracle version 19.25.0.0.0)"
-LABEL org.opencontainers.image.version="17.1.5"
+LABEL org.opencontainers.image.description="CloudNative PostgreSQL ${PG_MAJOR} (${PG_VERSION}) container with Oracle integration support (Oracle version ${ORACLE_VERSION}, oracle_fdw ${ORACLE_FDW_VERSION})"
+LABEL org.opencontainers.image.version="${PG_VERSION}"
 LABEL org.opencontainers.image.vendor="dingo4dev"
 LABEL org.opencontainers.image.licenses="GNU3"
 LABEL org.opencontainers.image.source="https://github.com/dingo4dev/cloudnative-pg-extension"
-
-ARG ORACLE_VERSION=19.25.0.0.0
+LABEL org.opencontainers.image.oracle_version="${ORACLE_VERSION}"
+LABEL org.opencontainers.image.oracle_fdw_version="${ORACLE_FDW_VERSION}"
 
 USER root
 
-RUN  echo Postgresql Major Version: $PG_MAJOR && echo Oracle instant client version: $ORACLE_VERSION
+RUN  echo Postgresql Major Version: $PG_MAJOR && echo Oracle instant client version: $ORACLE_VERSION && echo Oracle FDW version: $ORACLE_FDW_VERSION
 
 
 # Install build dependencies
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --fix-missing \
     build-essential \
     git \
     wget \
@@ -56,13 +62,12 @@ ENV ORACLE_HOME=/opt/oracle/instantclient_19_25
 ENV LD_LIBRARY_PATH=$ORACLE_HOME
 ENV PATH=$ORACLE_HOME:$PATH
 
-# Clone and build oracle_fdw
+# Clone and build oracle_fdw (pinned to stable version)
+ARG ORACLE_FDW_VERSION=ORACLE_FDW_2_8_0
 RUN git clone https://github.com/laurenz/oracle_fdw.git \
-    && cd oracle_fdw \ 
+    && cd oracle_fdw \
+    && git checkout ${ORACLE_FDW_VERSION} \
     && make && make install
-
-# RUN make ORACLE_HOME=$ORACLE_HOME \
-#     && make install
 
 # Add extension to postgresql.conf
 RUN echo "shared_preload_libraries = 'oracle_fdw,pg_cron'" >> /usr/share/postgresql/postgresql.conf.sample
@@ -76,4 +81,9 @@ RUN apt-get remove -y build-essential git postgresql-server-dev-$PG_MAJOR \
 
 # Change the uid of postgres to 26
 RUN usermod -u 26 postgres
+
+# Add health check
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
+    CMD pg_isready -U postgres || exit 1
+
 USER 26
