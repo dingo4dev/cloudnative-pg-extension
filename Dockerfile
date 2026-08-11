@@ -6,7 +6,7 @@ FROM ghcr.io/cloudnative-pg/postgresql:$PG_MAJOR-bullseye
 ARG PG_MAJOR
 ARG PG_VERSION
 ARG ORACLE_VERSION=19.25.0.0.0
-ARG ORACLE_FDW_VERSION=ORACLE_FDW_2_7_0
+ARG ORACLE_FDW_VERSION=ORACLE_FDW_2_8_0
 
 LABEL maintainer="dingo4dev <stanleylkal@gmail.com>"
 LABEL org.opencontainers.image.title="CloudNative PostgreSQL with Oracle Integration"
@@ -63,7 +63,7 @@ ENV LD_LIBRARY_PATH=$ORACLE_HOME
 ENV PATH=$ORACLE_HOME:$PATH
 
 # Clone and build oracle_fdw (pinned to stable version)
-ARG ORACLE_FDW_VERSION=ORACLE_FDW_2_7_0
+ARG ORACLE_FDW_VERSION=ORACLE_FDW_2_8_0
 RUN git clone https://github.com/laurenz/oracle_fdw.git \
     && cd oracle_fdw \
     && git checkout ${ORACLE_FDW_VERSION} \

@@ -9,7 +9,7 @@ services:
         PG_MAJOR: 18
         PG_VERSION: 18.4
         ORACLE_VERSION: 19.25.0.0.0
-        ORACLE_FDW_VERSION: ORACLE_FDW_2_7_0
+        ORACLE_FDW_VERSION: ORACLE_FDW_2_8_0
     image: postgres-oracle-fdw:18.4
     container_name: postgres-oracle-fdw
     environment:

@@ -10,7 +10,6 @@
 set -e
 
 ORACLE_VERSION="19.25.0.0.0"
-ORACLE_FDW_VERSION="ORACLE_FDW_2_7_0"
 
 # Define PostgreSQL versions
 declare -A PG_VERSIONS
@@ -21,6 +20,11 @@ PG_VERSIONS[18]="18.4"
 build_version() {
     local major=$1
     local version=${PG_VERSIONS[$major]}
+    local oracle_fdw_version="ORACLE_FDW_2_7_0"
+
+    if [ "$major" = "18" ]; then
+        oracle_fdw_version="ORACLE_FDW_2_8_0"
+    fi
     
     if [ -z "$version" ]; then
         echo "Error: Unknown PostgreSQL version: $major"
@@ -28,12 +32,12 @@ build_version() {
         exit 1
     fi
     
-    echo "Building PostgreSQL $major ($version) with Oracle $ORACLE_VERSION..."
+    echo "Building PostgreSQL $major ($version) with Oracle $ORACLE_VERSION and oracle_fdw $oracle_fdw_version..."
     docker build \
         --build-arg PG_MAJOR=$major \
         --build-arg PG_VERSION=$version \
         --build-arg ORACLE_VERSION=$ORACLE_VERSION \
-        --build-arg ORACLE_FDW_VERSION=$ORACLE_FDW_VERSION \
+        --build-arg ORACLE_FDW_VERSION=$oracle_fdw_version \
         -t postgres-oracle-fdw:$version \
         -t postgres-oracle-fdw:$major \
         .

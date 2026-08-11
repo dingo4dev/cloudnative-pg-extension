@@ -20,14 +20,16 @@ jobs:
           - major: "16"
             version: "16.6"
             latest: false
+            oracle_fdw_version: "ORACLE_FDW_2_7_0"
           - major: "17"
             version: "17.1.5"
             latest: false
+            oracle_fdw_version: "ORACLE_FDW_2_7_0"
           - major: "18"
             version: "18.4"
             latest: true
+            oracle_fdw_version: "ORACLE_FDW_2_8_0"
         oracle_version: ["19.25.0.0.0"]
-        oracle_fdw_version: ["ORACLE_FDW_2_8_0"]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -90,7 +92,7 @@ jobs:
             PG_MAJOR=${{ matrix.pg_version.major }}
             PG_VERSION=${{ matrix.pg_version.version }}
             ORACLE_VERSION=${{ matrix.oracle_version }}
-            ORACLE_FDW_VERSION=${{ matrix.oracle_fdw_version }}
+            ORACLE_FDW_VERSION=${{ matrix.pg_version.oracle_fdw_version }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -105,7 +107,7 @@ jobs:
             PG_MAJOR=${{ matrix.pg_version.major }}
             PG_VERSION=${{ matrix.pg_version.version }}
             ORACLE_VERSION=${{ matrix.oracle_version }}
-            ORACLE_FDW_VERSION=${{ matrix.oracle_fdw_version }}
+            ORACLE_FDW_VERSION=${{ matrix.pg_version.oracle_fdw_version }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -118,10 +120,13 @@ jobs:
         pg_version:
           - major: "16"
             version: "16.6"
+            oracle_fdw_version: "ORACLE_FDW_2_7_0"
           - major: "17"
             version: "17.1.5"
+            oracle_fdw_version: "ORACLE_FDW_2_7_0"
           - major: "18"
             version: "18.4"
+            oracle_fdw_version: "ORACLE_FDW_2_8_0"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -139,7 +144,7 @@ jobs:
             PG_MAJOR=${{ matrix.pg_version.major }}
             PG_VERSION=${{ matrix.pg_version.version }}
             ORACLE_VERSION=19.25.0.0.0
-            ORACLE_FDW_VERSION=ORACLE_FDW_2_8_0
+            ORACLE_FDW_VERSION=${{ matrix.pg_version.oracle_fdw_version }}
 
       - name: Test PostgreSQL starts
         run: |

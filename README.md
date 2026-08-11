@@ -158,7 +158,7 @@ docker build \
   --build-arg PG_MAJOR=18 \
   --build-arg PG_VERSION=18.4 \
   --build-arg ORACLE_VERSION=19.25.0.0.0 \
-  --build-arg ORACLE_FDW_VERSION=ORACLE_FDW_2_7_0 \
+  --build-arg ORACLE_FDW_VERSION=ORACLE_FDW_2_8_0 \
   -t postgres-oracle-fdw:18.4 .
 
 # Build for multiple architectures
@@ -445,7 +445,7 @@ This section documents the recent changes and updates to the project:
 - ✅ **Health Checks**: Implemented container health checks for orchestration
 - ✅ **Latest Tag**: Added `:latest` tag pointing to newest PostgreSQL version
 - ✅ **PostgreSQL 16 Support**: Added PostgreSQL 16.6 to supported versions
-- ✅ **Version Pinning**: Pinned oracle_fdw to stable version (ORACLE_FDW_2_7_0)
+- ✅ **Version Pinning**: Pinned oracle_fdw by PostgreSQL major (PG16/17: ORACLE_FDW_2_7_0, PG18: ORACLE_FDW_2_8_0)
 - ✅ **Docker Compose**: Added docker-compose.yml for local development
 - ✅ **Automated Testing**: CI/CD now includes extension loading tests
 - ✅ **Security Scanning**: Added Trivy security scanning workflow
