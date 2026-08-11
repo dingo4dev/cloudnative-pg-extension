@@ -27,7 +27,7 @@ jobs:
             version: "18.4"
             latest: true
         oracle_version: ["19.25.0.0.0"]
-        oracle_fdw_version: ["ORACLE_FDW_2_7_0"]
+        oracle_fdw_version: ["ORACLE_FDW_2_8_0"]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -139,7 +139,7 @@ jobs:
             PG_MAJOR=${{ matrix.pg_version.major }}
             PG_VERSION=${{ matrix.pg_version.version }}
             ORACLE_VERSION=19.25.0.0.0
-            ORACLE_FDW_VERSION=ORACLE_FDW_2_7_0
+            ORACLE_FDW_VERSION=ORACLE_FDW_2_8_0
 
       - name: Test PostgreSQL starts
         run: |
