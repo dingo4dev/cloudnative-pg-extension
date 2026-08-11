@@ -43,7 +43,7 @@ jobs:
             ORACLE_FDW_VERSION=${{ matrix.pg_version.oracle_fdw_version }}
 
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: 'postgres-oracle-fdw:scan'
           format: 'sarif'
